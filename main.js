@@ -4,11 +4,11 @@ let choiceVar;
 
 
 function chooseX() {
-    let choiceVar = "cross";
+    choiceVar = "cross";
 }
 
 function chooseO() {
-    let choiceVar = "circle";
+    choiceVar = "circle";
 }
 
 function fillArea() {

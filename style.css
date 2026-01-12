@@ -1,0 +1,41 @@
+table, th, td {
+  border: 1px solid black;
+  border-collapse:collapse;
+}
+th, td {
+    width: 250px;
+    height: 150px;
+}
+.tic-tac-toe-table tr:first-child th {
+    border-top: none;
+}
+
+.tic-tac-toe-table {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.x-colour {
+    color:darkred;
+}
+
+.o-colour {
+    color:darkblue;
+}
+
+button {
+    height:100px;
+    width:150px;
+    border-radius: 25px;
+}
+ 
+#x-button {
+    background-color:white;
+    color:darkred;
+    border-color:darkred;
+}
+#o-button {
+    background-color:white;
+    color:darkblue;
+    border-color:darkblue;
+}

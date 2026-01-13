@@ -1,32 +1,50 @@
 let yourMove = false;
 
+let gameOngoing = false;
+
 let choiceVar;
+
+let turnNum = 0;
 
 function openTest() {
     document.getElementById("choice-section").style.display = "block";
 }
 
-document.getElementById('start-button').addEventListener('click', openTest);
+document.getElementById('start-button').addEventListener('click', openTest); //Lines 9-13: Opening the colour choice buttons
 
 function openTable() {
     document.getElementById("table-section").removeAttribute("id");
 }
 function elmntEL(element) {
-    element.addEventListener('click', openTable);
+    element.addEventListener('click', openTable); 
 }
 const choiceButtons = document.getElementsByClassName('choice-button');
-Array.from(choiceButtons).forEach(elmntEL);
+Array.from(choiceButtons).forEach(elmntEL); //Lines 15-22: Opening the board
 
 function chooseX() {
-    choiceVar = "cross";
+    if (gameOngoing == false) {
+        choiceVar = "cross";
+        yourMove = true;
+        gameOngoing = true;
+    }
+    else {
+        alert("Game is already ongoing");
+    }
 }
 
 function chooseO() {
-    choiceVar = "circle";
+    if (gameOngoing == false) {
+        choiceVar = "circle";
+        gameOngoing = true;
+    }
+    else {
+        alert("Game is already ongoing");
+    }
 }
 
 function fillArea() {
-    if (yourMove == true) {
+    if ((yourMove == true) && (gameOngoing == true)) { //Sanity check
+        turnNum++;
         if (choiceVar == "cross") {
 
         } else if (choiceVar == "circle") {
@@ -34,9 +52,8 @@ function fillArea() {
         } else {
 
         }
-    }
-    else {
-
+    } else {
+        alert("Wait for your turn in the game!");
     }
 }
 

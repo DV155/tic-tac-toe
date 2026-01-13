@@ -4,13 +4,18 @@ let gameOngoing = false;
 
 let choiceVar;
 
+let victor;
+
 let turnNum = 0;
+
+const conclusion = document.getElementById("game-conclusion");
+
 
 function openTest() {
     document.getElementById("choice-section").style.display = "block";
 }
 
-document.getElementById('start-button').addEventListener('click', openTest); //Lines 9-13: Opening the colour choice buttons
+document.getElementById('start-button').addEventListener('click', openTest); //Next 4 lines: Opening the colour choice buttons
 
 function openTable() {
     document.getElementById("table-section").removeAttribute("id");
@@ -19,7 +24,7 @@ function elmntEL(element) {
     element.addEventListener('click', openTable); 
 }
 const choiceButtons = document.getElementsByClassName('choice-button');
-Array.from(choiceButtons).forEach(elmntEL); //Lines 15-22: Opening the board
+Array.from(choiceButtons).forEach(elmntEL); //Next  7 lines: Opening the board
 
 function chooseX() {
     if (gameOngoing == false) {
@@ -32,6 +37,13 @@ function chooseX() {
     }
 }
 
+function endGame() {
+    gameOngoing = false;
+    yourMove = false;
+    turnNum = 0;
+    conclusion.textContent = `Game Over! ${victor} wins in ${turnNum} turns! Reload page to play again.`;
+}
+
 function chooseO() {
     if (gameOngoing == false) {
         choiceVar = "circle";
@@ -42,13 +54,15 @@ function chooseO() {
     }
 }
 
-function fillArea() {
+function fillArea(square) {
     if ((yourMove == true) && (gameOngoing == true)) { //Sanity check
         turnNum++;
-        if (choiceVar == "cross") {
-
-        } else if (choiceVar == "circle") {
-
+        if ((choiceVar == "cross") && (squareFilled == false)) {
+            square.appendChild(drawCross());
+            square.element.setAttribute("class", "squareFilled");
+        } else if ((choiceVar == "circle") && (squareFilled == false)) {
+            square.appendChild(drawCircle());
+            square.element.setAttribute("class", "squareFilled");
         } else {
 
         }

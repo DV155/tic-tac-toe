@@ -9,9 +9,9 @@ let victor;
 let turnNum = 0;
 
 var imgO = document.createElement("img");
-imgO.src = "/images/circleasset.png";
+imgO.src = "circleasset.png";
 var imgX = document.createElement("img");
-imgX.src = "/images/crossasset.png";
+imgX.src = "crossasset.png";
 
 const roundTracking = document.getElementById("turn-tracking");
 
@@ -67,20 +67,26 @@ function chooseO() {
     }
 }
 
-function fillArea(square) {
+function fillArea(event) {
+    const square = event.currentTarget;
     if ((yourMove == true) && (gameOngoing == true)) { //Sanity check
+
+        if (square.squareFilled == true) {
+            alert("Square already filled! Choose another!");
+            return;
+        }
+
         turnNum++;
         updateTurn();
-        if ((choiceVar == "cross") && (squareFilled == false)) {
-            square.appendChild(drawCross());
-            square.element.setAttribute("class", "squareFilled");
-            square.appendChild(imgX);
-        } else if ((choiceVar == "circle") && (squareFilled == false)) {
-            square.appendChild(drawCircle());
-            square.element.setAttribute("class", "squareFilled");
-            square.appendChild(imgO);
-        } else if (squareFilled == true) {
-            alert("Square already filled! Choose another.");
+
+        if (choiceVar == "cross") {
+            square.setAttribute("class", "squareFilled");
+            square.appendChild(imgX.cloneNode(true));
+            square.squareFilled = true;
+        } else if (choiceVar == "circle") {
+            square.setAttribute("class", "squareFilled");
+            square.appendChild(imgO.cloneNode(true));
+            square.squareFilled = true;
         }
     } else {
         alert("Wait for your turn in the game!");

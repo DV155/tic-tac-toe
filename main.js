@@ -8,7 +8,18 @@ let victor;
 
 let turnNum = 0;
 
+var imgO = document.createElement("img");
+imgO.src = "/images/circleasset.png";
+var imgX = document.createElement("img");
+imgX.src = "/images/crossasset.png";
+
+const roundTracking = document.getElementById("turn-tracking");
+
 const conclusion = document.getElementById("game-conclusion");
+
+function updateTurn() {
+    roundTracking.textContent = `Turn number ${turnNum}. `;  
+}
 
 
 function openTest() {
@@ -31,6 +42,7 @@ function chooseX() {
         choiceVar = "cross";
         yourMove = true;
         gameOngoing = true;
+        updateTurn();
     }
     else {
         alert("Game is already ongoing");
@@ -48,6 +60,7 @@ function chooseO() {
     if (gameOngoing == false) {
         choiceVar = "circle";
         gameOngoing = true;
+        updateTurn();
     }
     else {
         alert("Game is already ongoing");
@@ -57,14 +70,17 @@ function chooseO() {
 function fillArea(square) {
     if ((yourMove == true) && (gameOngoing == true)) { //Sanity check
         turnNum++;
+        updateTurn();
         if ((choiceVar == "cross") && (squareFilled == false)) {
             square.appendChild(drawCross());
             square.element.setAttribute("class", "squareFilled");
+            square.appendChild(imgX);
         } else if ((choiceVar == "circle") && (squareFilled == false)) {
             square.appendChild(drawCircle());
             square.element.setAttribute("class", "squareFilled");
-        } else {
-
+            square.appendChild(imgO);
+        } else if (squareFilled == true) {
+            alert("Square already filled! Choose another.");
         }
     } else {
         alert("Wait for your turn in the game!");

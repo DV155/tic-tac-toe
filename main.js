@@ -21,6 +21,29 @@ const elementIds = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9'];
 const winPatterns = [ ['c1', 'c2', 'c3'], ['c4', 'c5', 'c6'], ['c7', 'c8', 'c9'],
 ['c1', 'c4', 'c7'], ['c2', 'c5', 'c8'], ['c3', 'c6', 'c9'], ['c1', 'c5', 'c9'], ['c7', 'c5', 'c3']]
 
+function checkWin() {
+    for (const pattern of winPatterns) {
+        const cell1 = document.getElementById(pattern[0]);
+        const cell2 = document.getElementById(pattern[1]);
+        const cell3 = document.getElementById(pattern[2]);
+        
+        if (cell1.classList.contains("has-cross") && 
+            cell2.classList.contains("has-cross") && 
+            cell3.classList.contains("has-cross")) {
+            victor = "Cross";
+            endGame();
+            return;
+        }
+        
+        if (cell1.classList.contains("has-circle") && 
+            cell2.classList.contains("has-circle") && 
+            cell3.classList.contains("has-circle")) {
+            victor = "Noughts";
+            endGame();
+            return;
+        }
+    }
+}
 function updateTurn() {
     roundTracking.textContent = `Turn number ${turnNum}. `;  
 }
@@ -69,10 +92,11 @@ function chooseX() {
 }
 
 function endGame() {
+    const finalTurnNum = turnNum;
     gameOngoing = false;
     yourMove = false;
+    conclusion.textContent = `Game Over! ${victor} wins in ${finalTurnNum} turns! Reload page to play again.`;
     turnNum = 0;
-    conclusion.textContent = `Game Over! ${victor} wins in ${turnNum} turns! Reload page to play again.`;
 }
 
 function chooseO() {
@@ -88,35 +112,16 @@ function chooseO() {
 }
 
 function fillSquare(square, symbol) {
-    if (square.squareFilled == true) {
-        alert("Square already filled! Choose another!");
-        return;
-    }
-    turnNum++;
-    updateTurn();
-    square.setAttribute("class", "squareFilled");
-    square.squareFilled = true;
-    if ((yourMove == true) && (choiceVar == "cross")) {
-        square.appendChild(imgX.cloneNode(true));
-    } else if ((yourMove == false) && (choiceVar == "cross")) {
-        square.appendChild(imgO.cloneNode(true));
-    } else if ((yourMove == true) && (choiceVar == "circle")) {
-        square.appendChild(imgO.cloneNode(true));
-    } else {
-        square.appendChild(imgX.cloneNode(true));
-    }
-}
-
-function fillSquare(square, symbol) {
    if (square.squareFilled == true) {
        alert("Square already filled! Choose another!");
        return;
    }
     turnNum++;
     updateTurn();
-   square.setAttribute("class", "squareFilled");
+   square.setAttribute("class", `squareFilled ${symbol === "cross" ? "has-cross" : "has-circle"}`);
    square.squareFilled = true;
    square.appendChild(symbol === "cross" ? imgX.cloneNode(true) : imgO.cloneNode(true));
+   checkWin()
 }
 function fillArea(event) {
     const square = event.currentTarget;
@@ -124,11 +129,13 @@ function fillArea(event) {
 
         yourMove = false;
         if (choiceVar == "cross") {
-            fillSquare(square, "cross")
+            fillSquare(square, "cross");
         } else if (choiceVar == "circle") {
-            fillSquare(square, "circle")
+            fillSquare(square, "circle");
         }
-        computerMove();
+        if (gameOngoing == true) {
+            computerMove();
+        }
     } else {
         alert("Wait for your turn in the game!");
     }

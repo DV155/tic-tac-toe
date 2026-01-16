@@ -17,8 +17,27 @@ const roundTracking = document.getElementById("turn-tracking");
 
 const conclusion = document.getElementById("game-conclusion");
 
+const elementIds = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9'];
+const winPatterns = [ ['c1', 'c2', 'c3'], ['c4', 'c5', 'c6'], ['c7', 'c8', 'c9'],
+['c1', 'c4', 'c7'], ['c2', 'c5', 'c8'], ['c3', 'c6', 'c9'], ['c1', 'c5', 'c9'], ['c7', 'c5', 'c3']]
+
 function updateTurn() {
     roundTracking.textContent = `Turn number ${turnNum}. `;  
+}
+
+function computerMove() { //Rudimentary logic for computer to move randomly; to be replaced later; minimax?
+    const randomIndex = Math.floor(Math.random() * 9);
+    const compPosition = document.getElementById(elementIds[randomIndex]);
+    if (compPosition.squareFilled == true) {
+        computerMove();
+        return;
+    }
+    if (choiceVar == "cross") {
+        fillSquare(compPosition, "circle");
+    } else if (choiceVar == "circle") {
+        fillSquare(compPosition, "cross");
+    }
+    yourMove = true;
 }
 
 
@@ -61,33 +80,55 @@ function chooseO() {
         choiceVar = "circle";
         gameOngoing = true;
         updateTurn();
+        computerMove();
     }
     else {
         alert("Game is already ongoing");
     }
 }
 
+function fillSquare(square, symbol) {
+    if (square.squareFilled == true) {
+        alert("Square already filled! Choose another!");
+        return;
+    }
+    turnNum++;
+    updateTurn();
+    square.setAttribute("class", "squareFilled");
+    square.squareFilled = true;
+    if ((yourMove == true) && (choiceVar == "cross")) {
+        square.appendChild(imgX.cloneNode(true));
+    } else if ((yourMove == false) && (choiceVar == "cross")) {
+        square.appendChild(imgO.cloneNode(true));
+    } else if ((yourMove == true) && (choiceVar == "circle")) {
+        square.appendChild(imgO.cloneNode(true));
+    } else {
+        square.appendChild(imgX.cloneNode(true));
+    }
+}
+
+function fillSquare(square, symbol) {
+   if (square.squareFilled == true) {
+       alert("Square already filled! Choose another!");
+       return;
+   }
+    turnNum++;
+    updateTurn();
+   square.setAttribute("class", "squareFilled");
+   square.squareFilled = true;
+   square.appendChild(symbol === "cross" ? imgX.cloneNode(true) : imgO.cloneNode(true));
+}
 function fillArea(event) {
     const square = event.currentTarget;
     if ((yourMove == true) && (gameOngoing == true)) { //Sanity check
 
-        if (square.squareFilled == true) {
-            alert("Square already filled! Choose another!");
-            return;
-        }
-
-        turnNum++;
-        updateTurn();
-
+        yourMove = false;
         if (choiceVar == "cross") {
-            square.setAttribute("class", "squareFilled");
-            square.appendChild(imgX.cloneNode(true));
-            square.squareFilled = true;
+            fillSquare(square, "cross")
         } else if (choiceVar == "circle") {
-            square.setAttribute("class", "squareFilled");
-            square.appendChild(imgO.cloneNode(true));
-            square.squareFilled = true;
+            fillSquare(square, "circle")
         }
+        computerMove();
     } else {
         alert("Wait for your turn in the game!");
     }
@@ -98,3 +139,4 @@ const cells = document.querySelectorAll(".clickable-cell");
 for (const cell of cells) {
     cell.addEventListener("click", fillArea);
 }
+

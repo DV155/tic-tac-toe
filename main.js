@@ -4,6 +4,8 @@ let gameOngoing = false;
 
 let choiceVar;
 
+let gameState = "";
+
 let victor;
 
 let turnNum = 0;
@@ -43,6 +45,13 @@ function checkWin() {
             return;
         }
     }
+    /*for (const filledSquares of elementIds) {
+        if (filledSquares.classList.contains("squareFilled")) {
+            gameState = "draw";
+            endGame();
+            return;
+        }
+    } */
 }
 function updateTurn() {
     roundTracking.textContent = `Turn number ${turnNum}. `;  
@@ -119,7 +128,11 @@ function endGame() {
     const finalTurnNum = turnNum;
     gameOngoing = false;
     yourMove = false;
-    conclusion.textContent = `Game Over! ${victor} wins in ${finalTurnNum} turns! Reload page to play again.`;
+    if (!gameState == "draw") {
+        conclusion.textContent = `Game Over! ${victor} wins in ${finalTurnNum} turns! Reload page to play again.`;
+    } else {
+        conclusion.textContent = `Game Over! Draw in ${finalTurnNum} turns! Reload page to play again.`;
+    }
     turnNum = 0;
 }
 

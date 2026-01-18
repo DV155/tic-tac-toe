@@ -49,7 +49,7 @@ function updateTurn() {
 }
 
 function computerMove() { //Rudimentary logic for computer to move randomly; to be replaced later; minimax?
-    const randomIndex = Math.floor(Math.random() * 9);
+    /*const randomIndex = Math.floor(Math.random() * 9);
     const compPosition = document.getElementById(elementIds[randomIndex]);
     if (compPosition.squareFilled == true) {
         computerMove();
@@ -59,8 +59,32 @@ function computerMove() { //Rudimentary logic for computer to move randomly; to 
         fillSquare(compPosition, "circle");
     } else if (choiceVar == "circle") {
         fillSquare(compPosition, "cross");
-    }
+    } */
+    bestMove();
     yourMove = true;
+}
+
+function minimax() {
+    return 1;
+
+}
+
+function bestMove() {
+    let bestScore = -Infinity;
+    for (const place in elementIds) {
+        const compPosition = document.getElementById(elementIds[place]);
+        if (!compPosition.classList.contains("squareFilled")) {
+            let score = minimax();
+            if (score > bestScore) {
+                bestScore = score;
+                if (choiceVar == "cross") {
+                    fillSquare(compPosition, "circle"); 
+                } else if (choiceVar == "circle") {
+                    fillSquare(compPosition, "cross");
+                }
+            }
+        }
+    }
 }
 
 

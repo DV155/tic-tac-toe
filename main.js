@@ -67,6 +67,11 @@ function checkWin() {
         endGame();
         return whoWon;
     }
+    if (searchRes === "tie") { 
+        gameState = "draw";
+        endGame();
+        return "tie";
+    }
     return null;
 }
 function updateTurn() {

@@ -81,7 +81,7 @@ function boardEvaluation() {
     return null;
 }
 
-function computerMove() { //Rudimentary logic for computer to move randomly; to be replaced later; minimax?
+function computerMove() {
     /*const randomIndex = Math.floor(Math.random() * 9);
     const compPosition = document.getElementById(elementIds[randomIndex]);
     if (compPosition.squareFilled == true) {
@@ -107,31 +107,104 @@ let scores = {
 function minimax(board, depth, isMaximising) {
     let winCheck = boardEvaluation()
     if (winCheck !== null) {
-        let score = scores[winCheck];
-        return score;
+        return scores[winCheck];
     }
     if (isMaximising) {
-
-    }
-    return 1;
-
-}
-
-function bestMove() {
-    let bestScore = -Infinity;
-    for (const place in elementIds) {
-        const compPosition = document.getElementById(elementIds[place]);
-        if (!compPosition.classList.contains("squareFilled")) {
-            let curScore = minimax(compPosition, 0, true);
-            if (curScore > bestScore) {
-                bestScore = curScore;
-                if (choiceVar == "cross") {
-                    fillSquare(compPosition, "circle"); 
-                } else if (choiceVar == "circle") {
-                    fillSquare(compPosition, "cross");
+        let bestScore = -Infinity;
+        for (const place in elementIds) {
+            const compPosition = document.getElementById(elementIds[place]);
+            if (!compPosition.classList.contains("squareFilled")) {
+                compPosition.classList.add("squareFilled");
+                compPosition.classList.add(choiceVar === "cross" ? "has-circle" : "has-cross");
+                let curScore = minimax(compPosition, depth + 1, false);
+                compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
+                bestScore = Math.max(curScore, bestScore)
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (const place in elementIds) {
+            const compPosition = document.getElementById(elementIds[place]);
+            if (!compPosition.classList.contains("squareFilled")) {
+                compPosition.classList.add("squareFilled");
+                compPosition.classList.add(choiceVar === "cross" ? "has-circle" : "has-cross");
+                let curScore = minimax(compPosition, depth + 1, true);
+                compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
+                bestScore = Math.min(curScore, bestScore)
                 }
             }
         }
+        return bestScore;
+    }    
+
+function bestMove() {
+    let bestScore = -Infinity;
+    let bestPosition = null;
+    for (const place in elementIds) {
+        const compPosition = document.getElementById(elementIds[place]);
+        if (!compPosition.classList.contains("squareFilled")) {
+            compPosition.classList.add("squareFilled");
+            compPosition.classList.add(choiceVar === "cross" ? "has-circle" : "has-cross");
+            let curScore = minimax(compPosition, 0, false);
+            compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
+            if (curScore > bestScore) {
+                bestScore = curScore;
+                bestPosition = compPosition
+            }
+        }
+    }
+    if (bestPosition) {
+        if (choiceVar == "cross") {
+            fillSquare(bestPosition, "circle"); 
+        } else if (choiceVar == "circle") {
+            fillSquare(bestPosition, "cross");
+        }
+    }
+}
+
+function minimax(board, depth, isMaximising) {
+    let winCheck = boardEvaluation();
+    if (winCheck !== null) {
+        return scores[winCheck];
+    }
+    
+    if (isMaximising) {
+        let bestScore = -Infinity;
+        for (const place of elementIds) {
+            const compPosition = document.getElementById(place);
+            if (!compPosition.classList.contains("squareFilled")) {
+                // Simulate AI move
+                compPosition.classList.add("squareFilled");
+                compPosition.classList.add(choiceVar === "cross" ? "has-circle" : "has-cross");
+                
+                let score = minimax(board, depth + 1, false);
+                
+                // Undo the simulation
+                compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
+                
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (const place of elementIds) {
+            const compPosition = document.getElementById(place);
+            if (!compPosition.classList.contains("squareFilled")) {
+                // Simulate player move
+                compPosition.classList.add("squareFilled");
+                compPosition.classList.add(choiceVar === "cross" ? "has-cross" : "has-circle");
+                
+                let score = minimax(board, depth + 1, true);
+                
+                // Undo the simulation
+                compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
+                
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
     }
 }
 
@@ -170,7 +243,7 @@ function endGame() {
     if (gameState == "draw") {
         conclusion.textContent = `Game Over! Draw in ${finalTurnNum} turns! Reload page to play again.`;
         whoWon = "tie";
-    } else {
+    } else { //SUPERFLOUS CODE??? 
         conclusion.textContent = `Game Over! ${victor} wins in ${finalTurnNum} turns! Reload page to play again.`;
         if (((choiceVar == "cross") && (victor == "Cross")) || ((choiceVar == "circle") && (victor == "Noughts")))  {
             whoWon = "player-win"
@@ -228,4 +301,3 @@ const cells = document.querySelectorAll(".clickable-cell");
 for (const cell of cells) {
     cell.addEventListener("click", fillArea);
 }
-

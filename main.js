@@ -6,6 +6,8 @@ let choiceVar;
 
 let gameState = "";
 
+let whoWon;
+
 let victor;
 
 let turnNum = 0;
@@ -23,28 +25,39 @@ const elementIds = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9'];
 const winPatterns = [ ['c1', 'c2', 'c3'], ['c4', 'c5', 'c6'], ['c7', 'c8', 'c9'],
 ['c1', 'c4', 'c7'], ['c2', 'c5', 'c8'], ['c3', 'c6', 'c9'], ['c1', 'c5', 'c9'], ['c7', 'c5', 'c3']]
 
-function checkWin() {
+function winSearch() {
     for (const pattern of winPatterns) {
         const cell1 = document.getElementById(pattern[0]);
         const cell2 = document.getElementById(pattern[1]);
         const cell3 = document.getElementById(pattern[2]);
-        
-        if (cell1.classList.contains("has-cross") && 
-            cell2.classList.contains("has-cross") && 
-            cell3.classList.contains("has-cross")) {
-            victor = "Cross";
-            endGame();
-            return;
-        }
-        
-        if (cell1.classList.contains("has-circle") && 
-            cell2.classList.contains("has-circle") && 
-            cell3.classList.contains("has-circle")) {
-            victor = "Noughts";
-            endGame();
-            return;
-        }
+
+        const crossWins = cell1.classList.contains("has-cross") && 
+        cell2.classList.contains("has-cross") && 
+        cell3.classList.contains("has-cross");
+
+        const circleWins = cell1.classList.contains("has-circle") && 
+        cell2.classList.contains("has-circle") && 
+        cell3.classList.contains("has-circle");
+
+        if (crossWins) return "cross";
+
+        if (circleWins) return "circle";
+
     }
+}
+function checkWin() {
+    const searchRes = winSearch();
+    if (searchRes == "cross") {
+        victor = "Cross";
+        endGame();
+        return whoWon;
+    }
+    if (searchRes === "circle") {
+        victor = "Noughts";
+        endGame();
+        return whoWon;
+    }
+    return null;
     /*for (const filledSquares of elementIds) {
         if (filledSquares.classList.contains("squareFilled")) {
             gameState = "draw";
@@ -55,6 +68,17 @@ function checkWin() {
 }
 function updateTurn() {
     roundTracking.textContent = `Turn number ${turnNum}. `;  
+}
+
+function boardEvaluation() {
+    const searchRes = winSearch();
+    if (searchRes == "cross") {
+        return choiceVar === "cross" ? "player-win" : "ai-win";
+    }
+    if (searchRes === "circle") {
+        return choiceVar === "circle" ? "player-win" : "ai-win";
+    }
+    return null;
 }
 
 function computerMove() { //Rudimentary logic for computer to move randomly; to be replaced later; minimax?
@@ -73,7 +97,22 @@ function computerMove() { //Rudimentary logic for computer to move randomly; to 
     yourMove = true;
 }
 
-function minimax() {
+let scores = {
+    "ai-win":1,
+    "player-win":-1,
+    "tie":0
+
+}
+
+function minimax(board, depth, isMaximising) {
+    let winCheck = boardEvaluation()
+    if (winCheck !== null) {
+        let score = scores[winCheck];
+        return score;
+    }
+    if (isMaximising) {
+
+    }
     return 1;
 
 }
@@ -83,9 +122,9 @@ function bestMove() {
     for (const place in elementIds) {
         const compPosition = document.getElementById(elementIds[place]);
         if (!compPosition.classList.contains("squareFilled")) {
-            let score = minimax();
-            if (score > bestScore) {
-                bestScore = score;
+            let curScore = minimax(compPosition, 0, true);
+            if (curScore > bestScore) {
+                bestScore = curScore;
                 if (choiceVar == "cross") {
                     fillSquare(compPosition, "circle"); 
                 } else if (choiceVar == "circle") {
@@ -128,10 +167,16 @@ function endGame() {
     const finalTurnNum = turnNum;
     gameOngoing = false;
     yourMove = false;
-    if (!gameState == "draw") {
-        conclusion.textContent = `Game Over! ${victor} wins in ${finalTurnNum} turns! Reload page to play again.`;
-    } else {
+    if (gameState == "draw") {
         conclusion.textContent = `Game Over! Draw in ${finalTurnNum} turns! Reload page to play again.`;
+        whoWon = "tie";
+    } else {
+        conclusion.textContent = `Game Over! ${victor} wins in ${finalTurnNum} turns! Reload page to play again.`;
+        if (((choiceVar == "cross") && (victor == "Cross")) || ((choiceVar == "circle") && (victor == "Noughts")))  {
+            whoWon = "player-win"
+        } else if (((choiceVar == "cross") && (victor == "Noughts")) || ((choiceVar == "circle") && (victor == "Cross"))) {
+            whoWon = "ai-win";
+        }
     }
     turnNum = 0;
 }

@@ -42,8 +42,18 @@ function winSearch() {
         if (crossWins) return "cross";
 
         if (circleWins) return "circle";
-
     }
+
+        let allFilled = true;
+        for (const id of elementIds) {
+            if (!document.getElementById(id).classList.contains("squareFilled")) {
+                allFilled = false;
+                break;
+            }
+        }
+        if (allFilled) return "tie";
+        
+        return null;
 }
 function checkWin() {
     const searchRes = winSearch();
@@ -58,13 +68,6 @@ function checkWin() {
         return whoWon;
     }
     return null;
-    /*for (const filledSquares of elementIds) {
-        if (filledSquares.classList.contains("squareFilled")) {
-            gameState = "draw";
-            endGame();
-            return;
-        }
-    } */
 }
 function updateTurn() {
     roundTracking.textContent = `Turn number ${turnNum}. `;  
@@ -78,28 +81,20 @@ function boardEvaluation() {
     if (searchRes === "circle") {
         return choiceVar === "circle" ? "player-win" : "ai-win";
     }
+    if (searchRes === "tie") {
+        return "tie";
+    }
     return null;
 }
 
 function computerMove() {
-    /*const randomIndex = Math.floor(Math.random() * 9);
-    const compPosition = document.getElementById(elementIds[randomIndex]);
-    if (compPosition.squareFilled == true) {
-        computerMove();
-        return;
-    }
-    if (choiceVar == "cross") {
-        fillSquare(compPosition, "circle");
-    } else if (choiceVar == "circle") {
-        fillSquare(compPosition, "cross");
-    } */
     bestMove();
     yourMove = true;
 }
 
 let scores = {
-    "ai-win":1,
-    "player-win":-1,
+    "ai-win":10,
+    "player-win":-10,
     "tie":0
 
 }
@@ -128,16 +123,15 @@ function minimax(board, depth, isMaximising) {
             const compPosition = document.getElementById(elementIds[place]);
             if (!compPosition.classList.contains("squareFilled")) {
                 compPosition.classList.add("squareFilled");
-                compPosition.classList.add(choiceVar === "cross" ? "has-circle" : "has-cross");
+                compPosition.classList.add(choiceVar === "cross" ? "has-cross" : "has-circle");
                 let curScore = minimax(compPosition, depth + 1, true);
                 compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
-                bestScore = Math.min(curScore, bestScore)
-                }
+                bestScore = Math.min(curScore, bestScore);
             }
         }
         return bestScore;
-    }    
-
+    } 
+}
 function bestMove() {
     let bestScore = -Infinity;
     let bestPosition = null;
@@ -160,51 +154,6 @@ function bestMove() {
         } else if (choiceVar == "circle") {
             fillSquare(bestPosition, "cross");
         }
-    }
-}
-
-function minimax(board, depth, isMaximising) {
-    let winCheck = boardEvaluation();
-    if (winCheck !== null) {
-        return scores[winCheck];
-    }
-    
-    if (isMaximising) {
-        let bestScore = -Infinity;
-        for (const place of elementIds) {
-            const compPosition = document.getElementById(place);
-            if (!compPosition.classList.contains("squareFilled")) {
-                // Simulate AI move
-                compPosition.classList.add("squareFilled");
-                compPosition.classList.add(choiceVar === "cross" ? "has-circle" : "has-cross");
-                
-                let score = minimax(board, depth + 1, false);
-                
-                // Undo the simulation
-                compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
-                
-                bestScore = Math.max(score, bestScore);
-            }
-        }
-        return bestScore;
-    } else {
-        let bestScore = Infinity;
-        for (const place of elementIds) {
-            const compPosition = document.getElementById(place);
-            if (!compPosition.classList.contains("squareFilled")) {
-                // Simulate player move
-                compPosition.classList.add("squareFilled");
-                compPosition.classList.add(choiceVar === "cross" ? "has-cross" : "has-circle");
-                
-                let score = minimax(board, depth + 1, true);
-                
-                // Undo the simulation
-                compPosition.classList.remove("squareFilled", "has-circle", "has-cross");
-                
-                bestScore = Math.min(score, bestScore);
-            }
-        }
-        return bestScore;
     }
 }
 
